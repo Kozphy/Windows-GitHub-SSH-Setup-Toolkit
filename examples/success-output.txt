@@ -1,0 +1,8 @@
+# Example: test_github_ssh.ps1 — success (illustrative, placeholder username)
+
+$ ssh -T git@github.com
+Hi YOUR_USERNAME! You've successfully authenticated, but GitHub does not provide shell access.
+
+# Toolkit interpretation:
+# [OK] GitHub SSH authentication succeeded.
+# [INFO] Message 'GitHub does not provide shell access' is expected — it is NOT an error.

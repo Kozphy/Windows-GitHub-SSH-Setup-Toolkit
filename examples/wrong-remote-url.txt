@@ -1,0 +1,9 @@
+# Example: origin points at the wrong place (illustrative)
+
+$ git remote -v
+origin  https://github.com/WRONG_OWNER/REPO.git (fetch)
+origin  https://github.com/WRONG_OWNER/REPO.git (push)
+
+# If you intended SSH to another owner/repo, verify on GitHub first, then use:
+# scripts\fix_git_remote_ssh.ps1 -RepoOwner OWNER -RepoName REPO
+# (Requires typing YES to confirm.)

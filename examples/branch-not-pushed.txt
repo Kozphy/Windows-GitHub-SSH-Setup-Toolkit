@@ -1,0 +1,18 @@
+# Example: commits exist locally but branch was never published (illustrative)
+
+$ git status -sb
+## feature/my-work
+ M README.md
+
+$ git log --oneline -3
+a1b2c3d Update README
+e4f5g6h Add setup notes
+i7j8k9l Initial commit
+
+# After you commit, GitHub will not show the branch until you push upstream:
+
+$ git push -u origin feature/my-work
+
+# Or use the toolkit (confirmation required):
+
+$ .\scripts\push_current_branch.ps1

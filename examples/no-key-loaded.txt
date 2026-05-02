@@ -1,0 +1,13 @@
+# Example: ssh-add -l when nothing is loaded (illustrative)
+
+$ ssh-add -l
+The agent has no identities.
+
+# Example: GitHub test may show (illustrative)
+
+$ ssh -T git@github.com
+git@github.com: Permission denied (publickey).
+
+# Likely next steps (safe):
+# - Start ssh-agent and add your key: scripts\setup_ssh_agent.ps1
+# - Ensure your public key is in GitHub -> Settings -> SSH and GPG keys
