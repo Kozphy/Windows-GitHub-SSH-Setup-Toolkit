@@ -60,19 +60,21 @@ try {
     if ($permDenied) {
         Write-Status "ERROR" "Permission denied (publickey)."
         Write-Status "NEXT" "Ensure your public key is on GitHub and your private key is loaded: ssh-add -l"
-        Write-Status "NEXT" "Run: .\scripts\setup_ssh_agent.ps1 or ssh-add path\to\id_ed25519"
+        Write-Status "NEXT" "Run full flow: .\scripts\complete_ssh_setup.ps1"
+        Write-Status "NEXT" "Or: .\scripts\setup_ssh_agent.ps1 then add the .pub key on GitHub"
         exit 1
     }
 
     if ($noAgent) {
         Write-Status "ERROR" "Cannot connect to ssh-agent."
-        Write-Status "NEXT" "Start ssh-agent and add your key: .\scripts\setup_ssh_agent.ps1"
+        Write-Status "NEXT" "Enable agent (may need UAC) then add key: .\scripts\complete_ssh_setup.ps1"
         exit 1
     }
 
     if ($noIdentities) {
         Write-Status "WARN" "SSH agent has no identities loaded."
         Write-Status "NEXT" "Load a key: .\scripts\setup_ssh_agent.ps1"
+        Write-Status "NEXT" "Or full flow: .\scripts\complete_ssh_setup.ps1"
         exit 1
     }
 

@@ -15,6 +15,7 @@ This toolkit is designed to be **beginner-friendly** and **safe-by-default**. It
 
 - **Changing `git remote` URLs** (`fix_git_remote_ssh.ps1`): you must type `YES` to apply.
 - **Pushing to `origin`** (`push_current_branch.ps1`): you must type `YES` to push.
+- **Enabling a Disabled `ssh-agent` service** may show a **UAC** prompt (`enable_ssh_agent_service.ps1` / `complete_ssh_setup.ps1`). Elevation is limited to starting/configuring that Windows service—not Git remotes, not key generation, not uploads.
 
 ## Why these boundaries exist
 

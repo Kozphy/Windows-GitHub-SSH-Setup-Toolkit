@@ -26,13 +26,16 @@ This document focuses on **non-destructive** fixes. This toolkit does not rewrit
 
 **Likely cause**
 
-- The Windows `ssh-agent` service is stopped or disabled.
-- Environment/session issues (less common on modern Windows OpenSSH).
+- The Windows `ssh-agent` service is stopped or **Disabled**.
+- `Set-Service` / `Start-Service` failed with *Access is denied* (needs Administrator).
 
 **Safe fix**
 
-1. Start the agent service (the toolkit uses `setup_ssh_agent.ps1` to start it when possible).
-2. Re-run `ssh-add -l` to confirm the agent responds.
+1. Run `scripts\complete_ssh_setup.ps1` and approve UAC if prompted.
+2. Or as Administrator: `Set-Service -Name ssh-agent -StartupType Automatic` then `Start-Service ssh-agent`.
+3. Re-run `ssh-add -l` to confirm the agent responds.
+
+See `docs/ssh-agent-elevation.md`.
 
 ---
 

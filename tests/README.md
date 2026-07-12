@@ -35,20 +35,27 @@ These scenarios validate the toolkit on a **Windows 10/11** machine with **Power
 
 **Expect:** Output includes GitHub’s SSH banner. Success contains **“successfully authenticated”**.
 
-## Scenario C — ssh-agent setup (non-destructive except agent/key load)
+## Scenario C — Complete SSH setup (agent + key + GitHub test)
 
-> This touches your local agent state but does **not** generate keys.
+> May show a **UAC** prompt if `ssh-agent` is Disabled. Does **not** generate keys.
 
-1. Ensure you have a key file (do **not** commit keys). Default expected path: `%USERPROFILE%\.ssh\id_ed25519`.
+1. Ensure you have a key file (do **not** commit keys). Default: `%USERPROFILE%\.ssh\id_ed25519`.
 2. Run:
 
    ```powershell
-   .\scripts\setup_ssh_agent.ps1
+   .\scripts\complete_ssh_setup.ps1
    ```
 
-3. Optional: `-KeyPath "C:\Users\YOU\.ssh\id_ed25519"`
+3. Approve UAC if prompted; enter key passphrase if asked.
+4. Expect GitHub success text containing **successfully authenticated**.
 
-**Expect:** Clear `[OK]` / `[WARN]` messages; `ssh-add` may prompt for passphrase.
+Split form:
+
+```powershell
+.\scripts\enable_ssh_agent_service.ps1
+.\scripts\setup_ssh_agent.ps1
+.\scripts\test_github_ssh.ps1
+```
 
 ## Scenario D — Fix remote (confirmation gate)
 

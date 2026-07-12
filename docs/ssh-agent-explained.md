@@ -20,5 +20,9 @@ After you run `ssh-add` (or the toolkit’s `setup_ssh_agent.ps1`), you enter th
 
 ## Related toolkit scripts
 
+- `scripts/complete_ssh_setup.ps1` — **recommended**: enable/start agent (UAC if needed) → `ssh-add` → `ssh -T git@github.com`.
+- `scripts/enable_ssh_agent_service.ps1` — Administrator-capable helper: `StartupType=Automatic` + start service only.
 - `scripts/setup_ssh_agent.ps1` — enable/start the service (when possible) and `ssh-add` your key path (does **not** create keys).
 - `scripts/diagnose_ssh.ps1` — checks whether the agent is running and whether identities are loaded (`ssh-add -l`).
+
+If the service is **Disabled**, see `docs/ssh-agent-elevation.md`.

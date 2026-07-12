@@ -192,7 +192,7 @@ function Write-FullReport {
     else {
         Write-Status "INFO" "ssh-agent service is present."
         if ($r.SshAgentRunning) { Write-Status "OK" "ssh-agent is running." }
-        else { Write-Status "WARN" "ssh-agent is not running. Run scripts\setup_ssh_agent.ps1 or start the service."; $script:ExitCode = 1 }
+        else { Write-Status "WARN" "ssh-agent is not running. Run scripts\complete_ssh_setup.ps1 (UAC if Disabled)."; $script:ExitCode = 1 }
     }
 
     Write-Host ""
@@ -269,7 +269,7 @@ function Write-FullReport {
     Write-Host ""
     Write-Host "========== RECOMMENDED NEXT STEPS =========="
     $steps = @()
-    if (-not $r.SshAgentRunning) { $steps += "Start and enable ssh-agent: run scripts\setup_ssh_agent.ps1" }
+    if (-not $r.SshAgentRunning) { $steps += "Start and enable ssh-agent: run scripts\complete_ssh_setup.ps1 (may prompt UAC if Disabled)" }
     if (-not $r.KeysLoadedOk -and $r.DefaultKeyPathExists) { $steps += "Load your key: ssh-add `"$defaultKey`"" }
     if (-not $r.DefaultKeyPathExists -and -not $r.KeysLoadedOk) {
         $steps += 'Create a key (you run locally): ssh-keygen -t ed25519 -C "your_email@example.com"'
@@ -301,7 +301,7 @@ function Write-DoctorSummary {
     if ($r.SshInstalled) { Write-DoctorPass "SSH installed" } else { Write-DoctorWarn "SSH client not on PATH" }
 
     if ($r.SshAgentRunning) { Write-DoctorPass "ssh-agent running" }
-    else { Write-DoctorWarn "ssh-agent is not running (start service or run setup_ssh_agent.ps1)" }
+    else { Write-DoctorWarn "ssh-agent is not running (run complete_ssh_setup.ps1; UAC if Disabled)" }
 
     if ($r.KeysLoadedOk) { Write-DoctorPass "SSH key loaded (ssh-add -l)" }
     else { Write-DoctorWarn "No SSH key loaded in agent (ssh-add -l)" }

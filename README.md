@@ -45,13 +45,20 @@ cd Windows-GitHub-SSH-Setup-Toolkit
 .\scripts\doctor.ps1
 ```
 
+**Complete SSH fix in one command** (enable agent → `ssh-add` → `ssh -T`; may prompt for UAC):
+
+```powershell
+.\scripts\complete_ssh_setup.ps1
+```
+
 For a full report:
 
 ```powershell
 .\scripts\diagnose_ssh.ps1
 ```
 
-> **No Python** and **no package installs** are required for v1.
+> **No Python** and **no package installs** are required for v1.  
+> Enabling a **Disabled** `ssh-agent` service needs Administrator (UAC). See `docs/ssh-agent-elevation.md`.
 
 ---
 
@@ -74,8 +81,8 @@ More detail: `docs/github-ssh-success-message.md`
 
 1. `.\scripts\doctor.ps1` (fast, read-only)
 2. If anything is red or unclear, `.\scripts\diagnose_ssh.ps1` (full sections)
-3. If keys/agent are the issue: `.\scripts\setup_ssh_agent.ps1` (does **not** create keys)
-4. Verify GitHub SSH: `.\scripts\test_github_ssh.ps1`
+3. If keys/agent are the issue: `.\scripts\complete_ssh_setup.ps1` (UAC if ssh-agent is Disabled; does **not** create keys)
+4. Or split steps: `.\scripts\setup_ssh_agent.ps1` then `.\scripts\test_github_ssh.ps1`
 5. If the remote URL is wrong: `.\scripts\fix_git_remote_ssh.ps1` (asks for `YES`)
 6. If you need to publish the current branch: `.\scripts\push_current_branch.ps1` (asks for `YES`)
 
@@ -87,10 +94,13 @@ More detail: `docs/github-ssh-success-message.md`
 | --- | --- | --- |
 | `scripts/doctor.ps1` | Compact read-only health summary | **No** |
 | `scripts/diagnose_ssh.ps1` | Full diagnostic report (system, agent, keys, GitHub, git remote) | **No** |
-| `scripts/setup_ssh_agent.ps1` | Sets ssh-agent to Automatic (best effort), starts service, `ssh-add` key path | **Yes** (service + agent state; **never generates keys**) |
+| `scripts/complete_ssh_setup.ps1` | **End-to-end:** enable/start ssh-agent → `ssh-add` → `ssh -T git@github.com` | **Yes** (service + agent only; UAC if needed) |
+| `scripts/enable_ssh_agent_service.ps1` | Set `ssh-agent` to Automatic and start it (UAC helper) | **Yes** (service config only) |
+| `scripts/setup_ssh_agent.ps1` | Enable/start agent (best effort / UAC) + `ssh-add` key path | **Yes** (service + agent; **never generates keys**) |
 | `scripts/test_github_ssh.ps1` | Runs `ssh -T git@github.com` and interprets results | **No** |
 | `scripts/fix_git_remote_ssh.ps1` | Sets `origin` (or chosen remote) to SSH URL after confirmation | **Yes** (remote URL only; **asks first**) |
 | `scripts/push_current_branch.ps1` | Shows `git push -u origin <branch>` and runs it after confirmation | **Yes** (**never force push**) |
+| `scripts/common.ps1` | Shared helpers (status lines, admin check, elevation) | Dot-sourced only |
 
 **Exit codes:** `diagnose_ssh.ps1` / `doctor.ps1` return **0** when all doctor checks pass and **1** when any check reports a problem (suitable for simple automation). A **GitHub SSH test** can take up to 25 seconds before timing out on very slow networks.
 
@@ -98,22 +108,39 @@ More detail: `docs/github-ssh-success-message.md`
 
 ## 7. Example: fix ssh-agent / load a key
 
-Default key path checked by setup:
+On many PCs, `ssh-agent` is **Disabled**, so this fails without Administrator:
+
+```powershell
+Set-Service -Name ssh-agent -StartupType Automatic
+Start-Service ssh-agent
+ssh-add $env:USERPROFILE\.ssh\id_ed25519
+ssh -T git@github.com
+```
+
+**Use the toolkit instead** (UAC once if needed; passphrase prompt stays in your window):
+
+```powershell
+.\scripts\complete_ssh_setup.ps1
+```
+
+Or step by step:
+
+```powershell
+.\scripts\enable_ssh_agent_service.ps1   # may prompt UAC
+.\scripts\setup_ssh_agent.ps1
+.\scripts\test_github_ssh.ps1
+```
+
+Default key path:
 
 ```text
 %USERPROFILE%\.ssh\id_ed25519
 ```
 
-Run:
-
-```powershell
-.\scripts\setup_ssh_agent.ps1
-```
-
 Non-default key:
 
 ```powershell
-.\scripts\setup_ssh_agent.ps1 -KeyPath "$env:USERPROFILE\.ssh\id_ed25519"
+.\scripts\complete_ssh_setup.ps1 -KeyPath "$env:USERPROFILE\.ssh\id_ed25519"
 ```
 
 If you do not have a key yet, create one yourself (not automated here):
@@ -123,6 +150,8 @@ ssh-keygen -t ed25519 -C "your_email@example.com"
 ```
 
 Then add the **public** `.pub` key to GitHub (**Settings → SSH and GPG keys**).
+
+More detail: `docs/ssh-agent-elevation.md`
 
 ---
 
@@ -165,6 +194,7 @@ Full rationale: `docs/safety-boundaries.md`
 ## 11. Troubleshooting
 
 Start here: `docs/troubleshooting.md`  
+Elevation / Disabled agent: `docs/ssh-agent-elevation.md`  
 Common errors: `docs/common-errors.md`  
 SSH vs HTTPS: `docs/ssh-vs-https.md`  
 ssh-agent explained: `docs/ssh-agent-explained.md`

@@ -23,13 +23,17 @@ Symptoms:
 - “Could not open a connection to your authentication agent”
 - “agent has no identities”
 - `ssh-add -l` shows nothing
+- `Set-Service` / `Start-Service` → *Access is denied* (service often **Disabled**)
 
 Actions:
 
-1. Run `.\scripts\setup_ssh_agent.ps1` (optionally pass `-KeyPath` if you do not use the default `id_ed25519`).
-2. Run `.\scripts\test_github_ssh.ps1`.
+1. Preferred one-shot: `.\scripts\complete_ssh_setup.ps1` (approve UAC if prompted).
+2. Or split: `.\scripts\setup_ssh_agent.ps1` then `.\scripts\test_github_ssh.ps1`.
+3. Optional: `-KeyPath` if you do not use the default `id_ed25519`.
 
 Expected success includes GitHub’s **“successfully authenticated … no shell access”** message—that is normal.
+
+Details: `docs/ssh-agent-elevation.md`
 
 ## 4) If GitHub SSH works, verify your remote URL
 
