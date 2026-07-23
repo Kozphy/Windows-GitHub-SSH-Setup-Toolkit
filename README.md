@@ -92,6 +92,7 @@ More detail: `docs/github-ssh-success-message.md`
 | `scripts/setup_ssh_agent.ps1` | Sets ssh-agent to Automatic (UAC if needed), starts service, `ssh-add` key path | **Yes** (service + agent state; **never generates keys**) |
 | `scripts/copy_public_key.ps1` | Copies `.pub` to clipboard and opens GitHub "new SSH key" page | **Yes** (clipboard; optional browser) |
 | `scripts/write_github_ssh_config.ps1` | Idempotent `Host github.com` IdentityFile block in `~/.ssh/config` | **Yes** (SSH config only; skips if Host exists) |
+| `scripts/fix_git_ssh_command.ps1` | Points Git at Windows OpenSSH (`core.sshCommand`) so `git push` uses ssh-agent | **Yes** (git config; asks `YES` unless `-Yes`) |
 | `scripts/test_github_ssh.ps1` | Runs `ssh -T git@github.com` and interprets results | **No** |
 | `scripts/fix_git_remote_ssh.ps1` | Sets `origin` (or chosen remote) to SSH URL after confirmation | **Yes** (remote URL only; **asks first**) |
 | `scripts/push_current_branch.ps1` | Shows `git push -u origin <branch>` and runs it after confirmation | **Yes** (**never force push**) |

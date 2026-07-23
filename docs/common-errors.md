@@ -39,6 +39,19 @@ This document focuses on **non-destructive** fixes. This toolkit does not rewrit
 
 ---
 
+## `ssh -T` works but `git push` says Permission denied
+
+**Meaning:** Windows OpenSSH can authenticate (often via ssh-agent), but Git is calling a different `ssh` (commonly Git for Windows), which cannot use that agent and may fail unlocking the key (`read_passphrase: can't open /dev/tty`).
+
+**Safe fix**
+
+1. Run `scripts/fix_git_ssh_command.ps1` (sets `core.sshCommand` to `C:/Windows/System32/OpenSSH/ssh.exe` after confirmation).
+2. Or for one push:  
+   `$env:GIT_SSH_COMMAND = 'C:/Windows/System32/OpenSSH/ssh.exe'; git push`
+3. Retry `git push`.
+
+---
+
 ## The agent has no identities
 
 **Meaning:** ssh-agent is reachable, but no private keys have been loaded into it.
