@@ -2,7 +2,74 @@
 
 **A Windows-first toolkit for diagnosing and fixing GitHub SSH, ssh-agent, remote URL, and branch push problems.**
 
+[![Release](https://img.shields.io/github/v/release/Kozphy/Windows-GitHub-SSH-Setup-Toolkit?label=release)](https://github.com/Kozphy/Windows-GitHub-SSH-Setup-Toolkit/releases/latest)
+
 This repository is **beginner-friendly**, **safe-by-default**, and structured like a small internal developer-productivity tool you might ship on a platform team: diagnose first, explain clearly, and avoid destructive Git operations.
+
+**Current release:** [v1.0.0](https://github.com/Kozphy/Windows-GitHub-SSH-Setup-Toolkit/releases/tag/v1.0.0) · See [CHANGELOG.md](CHANGELOG.md)
+
+---
+
+## Before / After (what “fixed” looks like)
+
+Broken Windows SSH setup often looks like a wall of unrelated errors. This toolkit collapses that into one readable checklist.
+
+<table>
+<tr>
+<td width="50%">
+
+**Before** — agent down, auth failing
+
+```text
+[WARN] ssh-agent is not running
+[WARN] No SSH key loaded in agent
+[WARN] GitHub SSH authentication not confirmed
+```
+
+```text
+git@github.com: Permission denied (publickey).
+```
+
+</td>
+<td width="50%">
+
+**After** — one-shot repair path
+
+```text
+[OK] ssh-agent running
+[OK] SSH key loaded (ssh-add -l)
+[OK] GitHub authentication succeeded
+[OK] origin uses SSH
+```
+
+```text
+Hi YOU! You've successfully authenticated,
+but GitHub does not provide shell access.
+```
+
+</td>
+</tr>
+</table>
+
+Typical repair on a broken machine:
+
+```powershell
+.\scripts\doctor.ps1
+.\scripts\ensure_github_ssh.ps1   # may show a UAC prompt
+.\scripts\fix_git_ssh_command.ps1 # if ssh -T works but git push fails
+.\scripts\doctor.ps1              # expect all [OK]
+```
+
+Full sample transcripts: [`examples/before-doctor.txt`](examples/before-doctor.txt) → [`examples/after-doctor.txt`](examples/after-doctor.txt)
+
+```mermaid
+flowchart LR
+  A[doctor.ps1] --> B{Healthy?}
+  B -->|no| C[ensure_github_ssh.ps1]
+  C --> D[test_github_ssh.ps1]
+  D --> E[git push / push_current_branch.ps1]
+  B -->|yes| E
+```
 
 ---
 
@@ -192,6 +259,8 @@ If you are building your portfolio as a **platform or developer productivity eng
 - Optional non-interactive flags for CI-style environments (still default-safe)
 - Narrow automated tests that mock `git`/`ssh` output (only if they stay simple on Windows)
 - Optional localized languages if demand appears
+
+Manual scenario checklist (A–E): `tests/README.md` (verified for v1.0.0).
 
 ---
 

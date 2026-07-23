@@ -1,0 +1,14 @@
+# Example: doctor.ps1 — BEFORE (broken Windows GitHub SSH)
+
+[INFO] doctor: compact summary (read-only, no changes)
+[OK] Git installed
+[OK] SSH installed
+[WARN] ssh-agent is not running (start service or run setup_ssh_agent.ps1)
+[WARN] No SSH key loaded in agent (ssh-add -l)
+[WARN] GitHub SSH authentication not confirmed (run test_github_ssh.ps1)
+[OK] origin uses SSH
+
+# Typical related failures at this point:
+#   ssh -T git@github.com  ->  Permission denied (publickey)
+#   git push               ->  Permission denied (publickey)
+#   ssh-add -l             ->  Error connecting to agent / no identities

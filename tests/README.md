@@ -2,6 +2,12 @@
 
 These scenarios validate the toolkit on a **Windows 10/11** machine with **PowerShell 5.1+** (Windows PowerShell or PowerShell 7). No Python or external dependencies are required.
 
+## Last verified
+
+| Date | Host | Result |
+| --- | --- | --- |
+| 2026-07-23 | Windows 10/11, PowerShell 5.1, OpenSSH client, Git for Windows | **A–E passed** (D/E exercised cancel/`NO` gates only) |
+
 ## Prerequisites for meaningful tests
 
 - Git for Windows installed (`git --version`).
@@ -25,6 +31,8 @@ These scenarios validate the toolkit on a **Windows 10/11** machine with **Power
 
 **Expect:** Sections print (`SYSTEM`, `SSH AGENT`, …). No Git remotes are changed; nothing is pushed. If your machine is not fully configured, `doctor.ps1` may exit with code **1** (this is expected until ssh-agent, keys, and GitHub auth are healthy).
 
+**Verified 2026-07-23:** Pass (`doctor` / `diagnose` exit 0 on a healthy machine).
+
 ## Scenario B — GitHub SSH test
 
 1. Run:
@@ -34,6 +42,8 @@ These scenarios validate the toolkit on a **Windows 10/11** machine with **Power
    ```
 
 **Expect:** Output includes GitHub’s SSH banner. Success contains **“successfully authenticated”**.
+
+**Verified 2026-07-23:** Pass.
 
 ## Scenario C — ssh-agent setup (non-destructive except agent/key load)
 
@@ -49,6 +59,8 @@ These scenarios validate the toolkit on a **Windows 10/11** machine with **Power
 3. Optional: `-KeyPath "C:\Users\YOU\.ssh\id_ed25519"`
 
 **Expect:** Clear `[OK]` / `[WARN]` messages; `ssh-add` may prompt for passphrase.
+
+**Verified 2026-07-23:** Pass (agent already running; fingerprint match; skipped redundant `ssh-add`).
 
 ## Scenario D — Fix remote (confirmation gate)
 
@@ -66,6 +78,8 @@ These scenarios validate the toolkit on a **Windows 10/11** machine with **Power
 
 **Expect:** No automatic push; remote changes only after `YES`.
 
+**Verified 2026-07-23:** Pass for cancel path (`NO` → “Cancelled. No changes made.”; `origin` unchanged). Confirm/`YES` path not re-applied on this production remote.
+
 ## Scenario E — Push current branch (confirmation gate)
 
 1. In a test repo with permission to push, create a branch with a tiny commit.
@@ -78,6 +92,8 @@ These scenarios validate the toolkit on a **Windows 10/11** machine with **Power
 3. Cancel once, then confirm once.
 
 **Expect:** Toolkit never runs `--force`.
+
+**Verified 2026-07-23:** Pass for cancel path (`NO` → “Cancelled. No push performed.”).
 
 ## Safety checklist for testers
 

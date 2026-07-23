@@ -1,0 +1,13 @@
+# Example: doctor.ps1 — AFTER (healthy Windows GitHub SSH)
+
+[INFO] doctor: compact summary (read-only, no changes)
+[OK] Git installed
+[OK] SSH installed
+[OK] ssh-agent running
+[OK] SSH key loaded (ssh-add -l)
+[OK] GitHub authentication succeeded
+[OK] origin uses SSH
+[NEXT] git push -u origin main
+
+# Related success banner (expected, not an error):
+#   Hi YOUR_USERNAME! You've successfully authenticated, but GitHub does not provide shell access.
