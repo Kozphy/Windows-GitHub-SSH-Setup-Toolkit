@@ -23,11 +23,13 @@ Symptoms:
 - “Could not open a connection to your authentication agent”
 - “agent has no identities”
 - `ssh-add -l` shows nothing
+- `Permission denied (publickey)`
 
 Actions:
 
-1. Run `.\scripts\setup_ssh_agent.ps1` (optionally pass `-KeyPath` if you do not use the default `id_ed25519`).
-2. Run `.\scripts\test_github_ssh.ps1`.
+1. Preferred: `.\scripts\ensure_github_ssh.ps1` (may show a UAC prompt to enable `ssh-agent`).
+2. Or: `.\scripts\setup_ssh_agent.ps1` then `.\scripts\test_github_ssh.ps1`.
+3. If GitHub still denies the key: `.\scripts\copy_public_key.ps1` and paste into GitHub SSH settings.
 
 Expected success includes GitHub’s **“successfully authenticated … no shell access”** message—that is normal.
 

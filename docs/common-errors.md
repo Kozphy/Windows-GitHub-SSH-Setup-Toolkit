@@ -14,9 +14,10 @@ This document focuses on **non-destructive** fixes. This toolkit does not rewrit
 
 **Safe fix**
 
-1. Run `scripts/diagnose_ssh.ps1`.
-2. Ensure GitHub has your **public** `.pub` key.
-3. Run `scripts/setup_ssh_agent.ps1` (or `ssh-add` your private key path).
+1. Run `scripts/ensure_github_ssh.ps1` (agent + verify + public-key helper).
+2. Or step-by-step: `scripts/diagnose_ssh.ps1`, then `scripts/setup_ssh_agent.ps1`.
+3. If diagnose says the **direct IdentityFile test** was also denied, run `scripts/copy_public_key.ps1` and paste into GitHub (**Settings → SSH and GPG keys**).
+4. Re-test with `scripts/test_github_ssh.ps1`.
 
 ---
 
@@ -28,11 +29,13 @@ This document focuses on **non-destructive** fixes. This toolkit does not rewrit
 
 - The Windows `ssh-agent` service is stopped or disabled.
 - Environment/session issues (less common on modern Windows OpenSSH).
+- Non-admin shells cannot enable a **Disabled** `ssh-agent` service without elevation.
 
 **Safe fix**
 
-1. Start the agent service (the toolkit uses `setup_ssh_agent.ps1` to start it when possible).
+1. Run `scripts/setup_ssh_agent.ps1` and **accept the UAC prompt** so the service can be set to Automatic and started.
 2. Re-run `ssh-add -l` to confirm the agent responds.
+3. Optional fallback (no agent required for many keys): `scripts/write_github_ssh_config.ps1`.
 
 ---
 

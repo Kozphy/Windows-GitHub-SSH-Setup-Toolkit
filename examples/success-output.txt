@@ -1,8 +1,6 @@
-# Example: test_github_ssh.ps1 — success (illustrative, placeholder username)
-
-$ ssh -T git@github.com
 Hi YOUR_USERNAME! You've successfully authenticated, but GitHub does not provide shell access.
 
-# Toolkit interpretation:
-# [OK] GitHub SSH authentication succeeded.
-# [INFO] Message 'GitHub does not provide shell access' is expected — it is NOT an error.
+# Notes for beginners
+# - That banner means SUCCESS for GitHub SSH (not a shell login).
+# - Permission denied (publickey) means GitHub did not accept any offered key.
+# - Fix path: scripts\ensure_github_ssh.ps1  then  scripts\test_github_ssh.ps1

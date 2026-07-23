@@ -74,10 +74,11 @@ More detail: `docs/github-ssh-success-message.md`
 
 1. `.\scripts\doctor.ps1` (fast, read-only)
 2. If anything is red or unclear, `.\scripts\diagnose_ssh.ps1` (full sections)
-3. If keys/agent are the issue: `.\scripts\setup_ssh_agent.ps1` (does **not** create keys)
-4. Verify GitHub SSH: `.\scripts\test_github_ssh.ps1`
-5. If the remote URL is wrong: `.\scripts\fix_git_remote_ssh.ps1` (asks for `YES`)
-6. If you need to publish the current branch: `.\scripts\push_current_branch.ps1` (asks for `YES`)
+3. **Preferred one-shot repair:** `.\scripts\ensure_github_ssh.ps1` (agent + test + public-key helper; may show a UAC prompt)
+4. Or manually: `.\scripts\setup_ssh_agent.ps1` then `.\scripts\test_github_ssh.ps1`
+5. If GitHub still rejects the key: `.\scripts\copy_public_key.ps1` (clipboard + open GitHub SSH settings)
+6. If the remote URL is wrong: `.\scripts\fix_git_remote_ssh.ps1` (asks for `YES`)
+7. If you need to publish the current branch: `.\scripts\push_current_branch.ps1` (asks for `YES`)
 
 ---
 
@@ -86,8 +87,11 @@ More detail: `docs/github-ssh-success-message.md`
 | Script | What it does | Makes changes? |
 | --- | --- | --- |
 | `scripts/doctor.ps1` | Compact read-only health summary | **No** |
-| `scripts/diagnose_ssh.ps1` | Full diagnostic report (system, agent, keys, GitHub, git remote) | **No** |
-| `scripts/setup_ssh_agent.ps1` | Sets ssh-agent to Automatic (best effort), starts service, `ssh-add` key path | **Yes** (service + agent state; **never generates keys**) |
+| `scripts/diagnose_ssh.ps1` | Full diagnostic report (system, agent, keys, GitHub, git remote); separates agent vs "key not on GitHub" | **No** |
+| `scripts/ensure_github_ssh.ps1` | One-shot: agent setup, auth test, public-key help if needed | **Yes** (agent/config; may open browser) |
+| `scripts/setup_ssh_agent.ps1` | Sets ssh-agent to Automatic (UAC if needed), starts service, `ssh-add` key path | **Yes** (service + agent state; **never generates keys**) |
+| `scripts/copy_public_key.ps1` | Copies `.pub` to clipboard and opens GitHub "new SSH key" page | **Yes** (clipboard; optional browser) |
+| `scripts/write_github_ssh_config.ps1` | Idempotent `Host github.com` IdentityFile block in `~/.ssh/config` | **Yes** (SSH config only; skips if Host exists) |
 | `scripts/test_github_ssh.ps1` | Runs `ssh -T git@github.com` and interprets results | **No** |
 | `scripts/fix_git_remote_ssh.ps1` | Sets `origin` (or chosen remote) to SSH URL after confirmation | **Yes** (remote URL only; **asks first**) |
 | `scripts/push_current_branch.ps1` | Shows `git push -u origin <branch>` and runs it after confirmation | **Yes** (**never force push**) |

@@ -50,7 +50,7 @@ try {
     if ($success) {
         Write-Status "OK" "GitHub SSH authentication succeeded."
         if ($noShell) {
-            Write-Status "INFO" "Message 'GitHub does not provide shell access' is expected — it is NOT an error."
+            Write-Status "INFO" "Message 'GitHub does not provide shell access' is expected - it is NOT an error."
             Write-Status "INFO" "GitHub uses SSH only for Git operations (clone, pull, push), not an interactive shell."
         }
         Write-Status "NEXT" "If your repo uses SSH remote: git pull / git push as needed."
@@ -59,8 +59,9 @@ try {
 
     if ($permDenied) {
         Write-Status "ERROR" "Permission denied (publickey)."
-        Write-Status "NEXT" "Ensure your public key is on GitHub and your private key is loaded: ssh-add -l"
-        Write-Status "NEXT" "Run: .\scripts\setup_ssh_agent.ps1 or ssh-add path\to\id_ed25519"
+        Write-Status "NEXT" "One-shot repair: .\scripts\ensure_github_ssh.ps1"
+        Write-Status "NEXT" "If the key is not on GitHub yet: .\scripts\copy_public_key.ps1"
+        Write-Status "NEXT" "Also ensure agent has the key: .\scripts\setup_ssh_agent.ps1"
         exit 1
     }
 

@@ -16,6 +16,10 @@ This toolkit is designed to be **beginner-friendly** and **safe-by-default**. It
 - **Changing `git remote` URLs** (`fix_git_remote_ssh.ps1`): you must type `YES` to apply.
 - **Pushing to `origin`** (`push_current_branch.ps1`): you must type `YES` to push.
 
+## Elevation (UAC)
+
+- **`setup_ssh_agent.ps1` / `ensure_github_ssh.ps1`** may request Administrator rights to enable or start the Windows `ssh-agent` service when it is Disabled. This does not generate keys and does not modify Git history.
+
 ## Why these boundaries exist
 
 SSH and Git mistakes can be scary for beginners. Restricting destructive operations reduces the chance of accidental data loss, accidental history rewriting, or unintended publication—while still helping you fix the most common Windows/GitHub SSH setup issues.

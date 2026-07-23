@@ -52,7 +52,7 @@ try {
 
     Write-Status "ERROR" "git push failed (exit $exit)."
     Write-Host ""
-    Write-Status "INFO" "Common causes (safe fixes only — no force push from this toolkit):"
+    Write-Status "INFO" "Common causes (safe fixes only - no force push from this toolkit):"
     Write-Host "  - Permission denied (publickey): SSH key not used by GitHub; fix SSH setup."
     Write-Host "  - Repository not found: wrong remote URL or no access to repo."
     Write-Host "  - non-fast-forward: remote has commits you lack; run git pull --rebase (or merge) first, then push."

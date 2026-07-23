@@ -130,6 +130,30 @@ function Invoke-Diagnosis {
     $results.PermissionDenied = ($gh.Combined -match "Permission denied")
     $results.NoIdentitiesInTest = ($gh.Combined -match "Agent has no identities|agent has no identities")
 
+    # Direct IdentityFile test helps separate "agent broken" from "key not on GitHub"
+    $results.DirectKeyAuthOk = $false
+    $results.DirectKeyPermissionDenied = $false
+    if ($results.SshInstalled -and $results.DefaultKeyPathExists -and -not $results.GithubAuthOk) {
+        $psi = New-Object System.Diagnostics.ProcessStartInfo
+        $psi.FileName = "ssh"
+        $psi.Arguments = "-T -o BatchMode=yes -o IdentitiesOnly=yes -i `"$defaultKey`" -o ConnectTimeout=15 git@github.com"
+        $psi.UseShellExecute = $false
+        $psi.RedirectStandardOutput = $true
+        $psi.RedirectStandardError = $true
+        $psi.CreateNoWindow = $true
+        $dp = New-Object System.Diagnostics.Process
+        $dp.StartInfo = $psi
+        try {
+            [void]$dp.Start()
+            if ($dp.WaitForExit(20000)) {
+                $dtext = $dp.StandardOutput.ReadToEnd() + "`n" + $dp.StandardError.ReadToEnd()
+                $results.DirectKeyAuthOk = ($dtext -match [regex]::Escape($successPhrase))
+                $results.DirectKeyPermissionDenied = ($dtext -match "Permission denied")
+            }
+        }
+        catch { }
+    }
+
     # --- GIT REPOSITORY ---
     $inRepo = $false
     $branch = ""
@@ -217,10 +241,18 @@ function Write-FullReport {
     $snippet = ($r.GhCombined -split "`n" | Select-Object -First 8) -join "`n"
     Write-Host $snippet
     if ($r.GithubAuthOk) {
-        Write-Status "OK" "GitHub SSH authentication succeeded (see message about 'no shell access' — that is normal)."
+        Write-Status "OK" "GitHub SSH authentication succeeded (see message about 'no shell access' - that is normal)."
     }
     elseif ($r.PermissionDenied) {
         Write-Status "ERROR" "Permission denied (publickey). Key not on GitHub, wrong key, or agent has no key."
+        if ($r.DirectKeyPermissionDenied) {
+            Write-Status "INFO" "Direct IdentityFile test also denied - public key is likely missing on GitHub."
+            Write-Status "NEXT" "Run: scripts\copy_public_key.ps1  (copies .pub and opens GitHub SSH settings)"
+        }
+        elseif ($r.DirectKeyAuthOk) {
+            Write-Status "INFO" "Direct IdentityFile test succeeded - agent/config issue, not GitHub registration."
+            Write-Status "NEXT" "Run: scripts\setup_ssh_agent.ps1 and/or scripts\write_github_ssh_config.ps1"
+        }
         $script:ExitCode = 1
     }
     elseif ($r.GhCombined -match "Could not open a connection to your authentication agent") {
@@ -275,7 +307,13 @@ function Write-FullReport {
         $steps += 'Create a key (you run locally): ssh-keygen -t ed25519 -C "your_email@example.com"'
         $steps += "Add the public key to GitHub (Settings -> SSH keys), then ssh-add your private key."
     }
-    if (-not $r.GithubAuthOk) { $steps += "Verify GitHub SSH: scripts\test_github_ssh.ps1" }
+    if (-not $r.GithubAuthOk) {
+        $steps += "One-shot repair: scripts\ensure_github_ssh.ps1"
+        $steps += "Or verify only: scripts\test_github_ssh.ps1"
+    }
+    if ($r.PermissionDenied -and $r.DirectKeyPermissionDenied) {
+        $steps += "Add public key on GitHub: scripts\copy_public_key.ps1"
+    }
     if ($r.InGitRepo -and $r.OriginIsHttps) {
         $steps += "Optional: switch origin to SSH with scripts\fix_git_remote_ssh.ps1 (confirmation required), or keep HTTPS and use PAT/GCM."
     }
@@ -322,7 +360,7 @@ function Write-DoctorSummary {
         }
     }
     else {
-        Write-Status "INFO" "Not inside a Git repo — skipped origin/push summary."
+        Write-Status "INFO" "Not inside a Git repo - skipped origin/push summary."
     }
     Write-Host ""
 }
